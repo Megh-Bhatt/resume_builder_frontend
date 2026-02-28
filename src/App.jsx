@@ -259,6 +259,7 @@ export default function App() {
   const [updating, setUpdating]         = useState(false);
   const [latexCopied, setLatexCopied]   = useState(false);
   const [error, setError]               = useState(null);
+  const [isDirty, setIsDirty]           = useState(false);
 
   // ── Streaming generate ──────────────────────────────────────
   const handleGenerate = async () => {
@@ -354,6 +355,7 @@ export default function App() {
       const data = await res.json();
       if (data.success) {
         setCurrentLatex(data.latex_code);
+        setIsDirty(false);
         await compilePDF(data.latex_code);
       }
     } catch (e) { console.error(e); }
@@ -362,10 +364,12 @@ export default function App() {
 
   const removeItem = (key, idx) => {
     setEditedMetadata(prev => ({ ...prev, [key]: prev[key].filter((_, i) => i !== idx) }));
+    setIsDirty(true);
   };
 
   const clearSection = (key) => {
     setEditedMetadata(prev => ({ ...prev, [key]: [] }));
+    setIsDirty(true);
   };
 
   const copyLatex = async () => {
@@ -626,6 +630,7 @@ export default function App() {
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes floatUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         textarea { font-family: 'JetBrains Mono', monospace !important; }
         textarea::placeholder { color: #334155 !important; }
         textarea:focus { outline: none; }
@@ -700,6 +705,7 @@ export default function App() {
           overflowY: 'auto',
           padding: '24px 20px',
           background: '#080c14',
+          position: 'relative',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -779,8 +785,53 @@ export default function App() {
           )}
 
           <p style={{ fontSize: 11, color: '#334155', textAlign: 'center', marginTop: 8 }}>
-            Remove items above, then click Regenerate
+            Remove items above to update your resume
           </p>
+
+          {/* Spacer so content isn't hidden behind the floating button */}
+          {isDirty && <div style={{ height: 80 }} />}
+
+          {/* ── Floating Regenerate Button ── */}
+          {isDirty && (
+            <div style={{
+              position: 'sticky',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              padding: '12px 0 4px',
+              background: 'linear-gradient(to top, #080c14 60%, transparent)',
+              animation: 'floatUp 0.25s ease',
+            }}>
+              <button
+                onClick={handleUpdateResume}
+                disabled={updating}
+                style={{
+                  width: '100%',
+                  background: updating
+                    ? '#0f1e30'
+                    : 'linear-gradient(135deg, #059669, #0891b2)',
+                  border: 'none',
+                  color: updating ? '#334155' : 'white',
+                  borderRadius: 12,
+                  padding: '13px 20px',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  cursor: updating ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  fontFamily: "'Outfit', sans-serif",
+                  boxShadow: updating ? 'none' : '0 4px 24px rgba(5,150,105,0.4)',
+                  transition: 'all 0.2s',
+                }}
+              >
+                {updating
+                  ? <><Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> Regenerating...</>
+                  : <><RefreshCw size={15} /> Regenerate Resume</>}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* ── Right: LaTeX Editor ── */}
