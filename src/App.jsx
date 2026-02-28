@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 
 // ─── Constants ───────────────────────────────────────────────
-const API_BASE = "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 const PIPELINE_NODES = [
   { id: "extract_info",       label: "Reading your resume",          sub: "Extracting structured data" },
@@ -268,7 +268,7 @@ export default function App() {
     setPhase('loading');
     setCompletedNodes([]);
     setActiveNode(PIPELINE_NODES[0].id);
-    setLoadingMsg('Connecting to AI pipeline...');
+    setLoadingMsg('Reading your resume...');
     setError(null);
     setPdfBase64(null);
 
@@ -452,7 +452,7 @@ export default function App() {
         <div style={styles.topBar}>
           <div style={styles.logo}>
             <div style={styles.logoIcon}><FileText size={18} color="white" /></div>
-            <span style={styles.logoText}>ResumeAI</span>
+            <span style={styles.logoText}>OneClickAI</span>
           </div>
           <span style={{ fontSize: 12, color: '#334155', fontFamily: 'JetBrains Mono, monospace' }}>
             Powered by Claude + LangGraph
@@ -467,9 +467,9 @@ export default function App() {
             borderRadius: 99, padding: '4px 14px', marginBottom: 20, textTransform: 'uppercase',
           }}>AI-Powered Resume Tailoring</div>
           <h1 style={{ margin: '0 0 16px', fontSize: 'clamp(28px, 4vw, 46px)', fontWeight: 700, letterSpacing: '-1px', lineHeight: 1.15 }}>
-            Land interviews with a<br />
+            Single click<br />
             <span style={{ background: 'linear-gradient(135deg, #3b82f6, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              resume built for the role
+              resume builder
             </span>
           </h1>
           <p style={{ color: '#64748b', fontSize: 16, maxWidth: 480, margin: '0 auto' }}>
@@ -570,7 +570,7 @@ export default function App() {
         <div style={styles.topBar}>
           <div style={styles.logo}>
             <div style={styles.logoIcon}><FileText size={18} color="white" /></div>
-            <span style={styles.logoText}>ResumeAI</span>
+            <span style={styles.logoText}>OneClickAI</span>
           </div>
           <span style={{ fontSize: 12, color: '#334155', fontFamily: 'JetBrains Mono, monospace' }}>
             {completedNodes.length}/{PIPELINE_NODES.length} nodes complete
@@ -653,7 +653,7 @@ export default function App() {
           </button>
           <div style={styles.logo}>
             <div style={styles.logoIcon}><FileText size={18} color="white" /></div>
-            <span style={styles.logoText}>ResumeAI</span>
+            <span style={styles.logoText}>OneClickAI</span>
           </div>
           {editedMetadata?.name && (
             <span style={{ fontSize: 13, color: '#334155' }}>— {editedMetadata.name}</span>
